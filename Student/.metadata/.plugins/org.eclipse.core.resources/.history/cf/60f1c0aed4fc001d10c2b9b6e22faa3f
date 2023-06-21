@@ -1,0 +1,201 @@
+package com.example.demo.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.model.Response;
+import com.example.demo.model.Student;
+import com.example.demo.repo.StudentRepository;
+
+
+@Service
+public class StudentServiceImpl{
+	
+	private static final Logger Logger=LoggerFactory.getLogger(StudentServiceImpl.class);
+
+	private static final String NOT_FOUND = null;
+	private static final String FOUND = null;
+	@Autowired
+	private StudentRepository studentRepository;
+	
+	public Response<Object> addStudentDetails(Student student) {
+		try {
+		Optional<Student> stud=studentRepository.findByName(student.getName());
+		if(!stud.isPresent()) {
+			student.setName(student.getName());
+			student.setRollNumber(student.getRollNumber());
+			student.setBranch(student.getBranch());
+			studentRepository.save(student);	
+			Logger.info("Student details are added successfully.");
+//			return new Response<Object>(200,"Thanks, Student Details are added Successfully..");
+			return null;
+		
+		}
+		else {
+			Logger.info("Student details are already exist");
+//			return new Response<>(201, "Student details already exist");
+			return null;
+		}
+		}
+		catch(Exception e) {
+			Logger.debug("Failed to add Student Details");
+//			return new Response<>(205, "Failed to add Student Details");
+			return null;
+		
+	}
+	}
+	
+	
+	public Student getStudentDetailsById(String id) {
+	    try {
+	        Optional<Student> optionalStudent = studentRepository.findById(id);
+	        
+	        if (optionalStudent.isPresent()) {
+	            Student student = optionalStudent.get();
+	            Logger.info("Student details fetched successfully.");
+//	            return new Response<>(200, "Student details fetched successfully.", student);
+	            return student;
+	        } else {
+	        	Logger.debug("Student details with id: " + id + " not found.");
+//	            return new Response<>(404, "Student details with id: " + id + " not found.", null);
+	        	return null;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Print the exception details for debugging purposes
+			Logger.debug("An error occurred while fetching student details.");
+
+//	        return new Response<>(500, "An error occurred while fetching student details.", null);
+			return null;
+	    }
+	}
+
+
+
+
+	public Student getStudentDetailsByName(String name) {
+		try {
+	        Optional<Student> optionalStudent = studentRepository.findByName(name);
+	        
+	        if (optionalStudent.isPresent()) {
+	            Student student = optionalStudent.get();
+	            Logger.info("Student details fetched successfully.");
+	            return student;
+//	            return new Response<>(200, "Student details fetched successfully.", student);
+	        } else {
+	        	Logger.debug("Student details with name: " + name + " is not found.");
+	        	return null;
+//	            return new Response<>(404, "Student details with name: " + name + " is not found.", null);
+	        }
+	    } catch (Exception e) {
+//	        return new Response<>(500, "An error occurred while fetching student details.", null);
+	    	Logger.debug("An error occurred while fetching student details.");
+	    	return null;
+	    }
+	}
+
+
+
+	public Student getStudentDetailsByRollNumber(String RollNumber) {
+		try {
+	        Optional<Student> optionalStudent = studentRepository.findByRollNumber(RollNumber);
+	        
+	        if (optionalStudent.isPresent()) {
+	            Student student = optionalStudent.get();
+	            Logger.info("Student details fetched successfully.");
+	            return student;
+//	            return new Response<>(200, "Student details fetched successfully.", student);
+	        } else {
+	        	Logger.debug("Student details with Roll Number: " + RollNumber + " is not found.");
+	        	return null;
+//	            return new Response<>(404, "Student details with Roll Number: " + RollNumber + " is not found.", null);
+	        }
+	    } catch (Exception e) {
+	    	Logger.debug("An error occurred while fetching student details.");
+//	        return new Response<>(500, "An error occurred while fetching student details.", null);
+	    	return null;
+	    }
+	}
+
+
+
+	public List<Student> getAllStudentList() {
+	    List<Student> student = studentRepository.findAll();
+	    if(student.isEmpty()) {
+//	    	return new Response<>(404, "List Not Found");
+	    	Logger.debug("List Not Found");
+	    	return null;
+	    }
+//	    return new Response<>(200, "List fetched Successfully",student );
+	    Logger.info("List fetched Successfully");
+	    return student;
+	}
+
+
+	
+
+
+	public Response<Student> updateStudentById(Student student, String _id) {
+        try {
+            Optional<Student> optionalStudent = studentRepository.findById(_id);
+
+            if (optionalStudent.isPresent()) {
+                Student existingStudent = optionalStudent.get();
+
+                // Update the fields of the existing student with the new values
+                existingStudent.setName(student.getName());
+                existingStudent.setRollNumber(student.getRollNumber());
+                existingStudent.setBranch(student.getBranch());
+
+                // Save the updated student
+                studentRepository.save(existingStudent);
+
+//                return new Response<>(200, "Student details updated successfully");
+                Logger.info("Student details updated successfully");
+                return null;
+            } else {
+//                return new Response<>(404, "Student with ID: " + _id + " not found");
+                Logger.debug("Student with ID: " + _id + " not found");
+                return null;
+            }
+        } catch (Exception e) {
+//            return new Response<>(500, "An error occurred while updating student details");
+        	Logger.debug("An error occurred while updating student details");
+        	return null;
+        }
+    }
+
+
+	public Response<Student> deleteStudentById(String _id) {
+		try {
+            Optional<Student> optionalStudent = studentRepository.findById(_id);
+            if(optionalStudent.isPresent()) {
+            	studentRepository.deleteById(_id);
+            	Logger.info("Student deleted Successfully.");
+//            	return new Response<>(200, "Student deleted Successfully.");
+            }else
+            {
+//                return new Response<>(404, "Student with ID: " + _id + " not found");
+            	Logger.debug("Student with ID: " + _id + " not found");
+            	return null;
+
+            }
+		}
+		catch(Exception e) {
+//            return new Response<>(500, "An error occurred while delete student details");
+			Logger.debug("An error occurred while delete student details");
+			return null;
+
+		}
+	}
+
+   
+}
+
+	
+
